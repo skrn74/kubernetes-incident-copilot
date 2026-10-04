@@ -1,0 +1,18 @@
+global:
+  resolve_timeout: 5m
+route:
+  receiver: "null"
+  group_by: [alertname, namespace]
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 30m
+  routes:
+    - receiver: incident-copilot
+      matchers:
+        - alertname = "WealthOpsCrashLoopBackOff"
+receivers:
+  - name: "null"
+  - name: incident-copilot
+    webhook_configs:
+      - url: http://host.docker.internal:5000/webhook
+        send_resolved: false

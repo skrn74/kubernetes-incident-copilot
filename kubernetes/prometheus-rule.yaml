@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: wealthops-crashloop
+  namespace: monitoring
+spec:
+  groups:
+    - name: wealthops.rules
+      rules:
+        - alert: WealthOpsCrashLoopBackOff
+          expr: increase(kube_pod_container_status_restarts_total{namespace="wealthops"}[5m]) > 2
+          for: 1m
+          labels:
+            severity: critical
+          annotations:
+            summary: WealthOps pod is restarting repeatedly
+            description: Pod {{ $labels.pod }} in {{ $labels.namespace }} has restarted more than twice in 5 minutes.
